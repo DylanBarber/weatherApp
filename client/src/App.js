@@ -4,7 +4,8 @@ import './App.css';
 
 class App extends Component {
 state = {
-    data: null
+    data: null,
+    cityInput: '',
   };
 
   componentDidMount() {
@@ -23,16 +24,22 @@ state = {
     }
     return body;
   };
-
+  cityInputOnChangeHandler = (e) => {
+    this.setState({cityInput: e.target.value})
+  }
+  submitButtonHandler = async () => {
+    const response = await fetch(`http://localhost:5000/weatherAPI/${this.state.cityInput}`)
+    const body = await response.json();
+    // if (response.status !== 200) {
+    //   throw Error(body.message)
+    // }
+    console.log(body);
+  }
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        {/* Render the newly fetched data inside of this.state.data  */}
-        <p className="App-intro">{this.state.data}</p>
+        <input onChange={this.cityInputOnChangeHandler}/>
+        <button onClick={this.submitButtonHandler}>Request Weather</button>
       </div>
     );
   }

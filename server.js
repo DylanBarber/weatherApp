@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'client/build')))
 // });
 
 //API return
-app.get('/apitest/:city', async (req, res) => {
+app.get('/weatherAPI/:city', async (req, res) => {
   const locationData = await fetchTest(req.params.city)
   res.send(locationData)
 })
