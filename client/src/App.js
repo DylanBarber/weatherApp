@@ -1,45 +1,71 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+// import "./weather-icons-wind.min.css";
+// import "./weather-icons.min.css";
+import "./weatherIcons/weather-icons-wind.css";
+import "./weatherIcons/weather-icons.css";
+import DateTime from "luxon/src/datetime.js";
 
 class App extends Component {
-state = {
+  state = {
     data: null,
-    cityInput: '',
+    cityInput: "",
+    weather: []
   };
 
-  componentDidMount() {
-      // Call our fetch function below once the component mounts
-    this.callBackendAPI()
-      .then(res => this.setState({ data: res.express }))
-      .catch(err => console.log(err));
-  }
-    // Fetches our GET route from the Express server. (Note the route we are fetching matches the GET route from server.js
-  callBackendAPI = async () => {
-    const response = await fetch('/express_backend');
-    const body = await response.json();
-
-    if (response.status !== 200) {
-      throw Error(body.message) 
-    }
-    return body;
+  cityInputOnChangeHandler = e => {
+    this.setState({ cityInput: e.target.value });
   };
-  cityInputOnChangeHandler = (e) => {
-    this.setState({cityInput: e.target.value})
-  }
   submitButtonHandler = async () => {
-    const response = await fetch(`http://localhost:5000/weatherAPI/${this.state.cityInput}`)
+    const response = await fetch(`/weatherAPI/${this.state.cityInput}`);
     const body = await response.json();
-    // if (response.status !== 200) {
-    //   throw Error(body.message)
-    // }
-    console.log(body);
-  }
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    console.log(body.hourly.data);
+    this.setState({ weather: body.hourly.data });
+  };
+
+  getIcon = forecast => {
+    console.log(forecast, " test");
+    switch (forecast) {
+      case "cloudy":
+        return <i className="wi wi-cloudy" />;
+      case "rain":
+        return <i className="wi wi-rain" />;
+      case "partly-cloudy-day":
+        return <i className="wi wi-day-cloudy" />;
+      case "partly-cloudy-night":
+        return <i className="wi wi-night-cloudy" />;
+      case "clear-day":
+        return <i className="wi wi-day-sunny" />;
+      case "clear-night":
+        return <i className="wi wi-night-clear" />;
+      default:
+        return null;
+    }
+  };
+
   render() {
+    const dataMap = this.state.weather.map(value => {
+      const dateTimeString = DateTime.fromSeconds(value.time).toFormat("h a");
+      return (
+        <div className="weatherCard">
+          <h1>{dateTimeString}</h1>
+          <h2>{value.summary}</h2>
+          {this.getIcon(value.icon)}
+          <h3>
+            Chance of rain: {Math.round(value.precipProbability * 100) + "%"}
+          </h3>
+        </div>
+      );
+    });
     return (
       <div className="App">
-        <input onChange={this.cityInputOnChangeHandler}/>
+        <input onChange={this.cityInputOnChangeHandler} />
         <button onClick={this.submitButtonHandler}>Request Weather</button>
+        <div className="weatherInfoDiv">{dataMap}</div>
       </div>
     );
   }

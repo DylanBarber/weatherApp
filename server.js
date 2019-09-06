@@ -1,9 +1,14 @@
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 5000;
 const path = require('path')
 const fetch = require('node-fetch')
 const dotenv = require('dotenv')
+const cors = require('cors')
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+app.use(cors())
+
 dotenv.config()
 const fetchTest = async (city) => {
     let locationFetch = await fetch(`http://open.mapquestapi.com/geocoding/v1/address?key=${process.env.MAPQUEST_KEY}&city=${city}`)
