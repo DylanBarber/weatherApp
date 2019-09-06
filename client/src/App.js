@@ -62,7 +62,8 @@ class App extends Component {
       );
     });
     return (
-      <div className="App">
+      <div className="appContainer">
+        <h1 className='title'>Enter City Only Below</h1>
         <input onChange={this.cityInputOnChangeHandler} />
         <button onClick={this.submitButtonHandler}>Request Weather</button>
         <div className="weatherInfoDiv">{dataMap}</div>
